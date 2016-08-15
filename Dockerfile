@@ -27,9 +27,6 @@ RUN echo "deb http://www.apache.org/dist/cassandra/debian 37x main" | tee  /etc/
 	&& apt-key adv --keyserver pgp.mit.edu --recv-keys 0353B12C \
 	&& apt-get update && apt-get install -y cassandra="$CASSANDRA_VERSION"
 
-# Setup Default keyspace
-RUN cqlsh -C -f /etc/cassandra/default-db-model.cql
-
 # Spark Installation
 ENV SPARK_HOME=/opt/spark
 ENV SPARK_VERSION=2.0.0
@@ -39,3 +36,5 @@ RUN mkdir -p ${SPARK_HOME} \
     && wget -O /tmp/spark.tgz http://d3kbcqa49mib13.cloudfront.net/spark-${SPARK_VERSION}-bin-hadoop2.7.tgz \
 	&& tar -xf /tmp/spark.tgz -C ${SPARK_HOME} --strip-components=1 \
 	&& rm -f /tmp/spark.tgz
+
+ADD resources/ /
