@@ -1,0 +1,90 @@
+// Plugins configuration
+buildscript {
+	repositories {
+		mavenLocal()
+		mavenCentral()
+	}
+}
+
+apply plugin:'application'
+apply plugin: 'idea'
+apply plugin: 'java'
+
+configurations {
+	provided
+	compile.extendsFrom provided
+}
+
+sourceSets {
+	main { compileClasspath += configurations.provided }
+}
+
+repositories {
+	mavenLocal()
+	mavenCentral()
+}
+
+group = 'com.github.santosfv.itau'
+archivesBaseName = 'itau'
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+def projectName = 'itau-test'
+description = 'Teste Itau Espec I'
+
+jar {
+	// Fat jar build instructions
+	dependsOn configurations.runtime
+	from {
+		// Exclude provided dependencies
+		(configurations.runtime - configurations.provided).collect {
+			it.isDirectory() ? it : zipTree(it)
+		}
+	}
+}
+
+idea {
+	module {
+		name = projectName
+		jdkName = sourceCompatibility
+		downloadJavadoc = true
+		downloadSources = false
+	}
+}
+
+def CASSANDRA_DRIVER_VERSION = "3.1.0"
+def CASSANDRA = [
+		"com.datastax.cassandra:cassandra-driver-core:$CASSANDRA_DRIVER_VERSION", 
+		"com.datastax.cassandra:cassandra-driver-mapping:$CASSANDRA_DRIVER_VERSION"
+	]
+def SPARK_PROVIDED = ["org.apache.spark:spark-core_2.11:2.0.0"]
+def TWITTER = ['org.twitter4j:twitter4j-core:4.0.4']
+def TEST = ["junit:junit:4.12", "org.mockito:mockito-core:1.10.19"]
+
+dependencies {
+	compile TWITTER, CASSANDRA
+	provided SPARK_PROVIDED
+	testCompile TEST
+}
+
+// Run configurations
+applicationDefaultJvmArgs = [
+		"-Dspark.app.name=ItauJob", 
+		"-Dspark.master=local[1]",
+		"-Dtwitter4j.oauth.consumerKey=YCM5lEgqZZhcpAZLZPBTUpc3m",
+		"-Dtwitter4j.oauth.consumerSecret=MfcwUdeF2ZwDIZAFnURmVhdtibYERv4InC3zkKYl7GslKMUKKy",
+		"-Dtwitter4j.oauth.accessToken=77205682-T95AjDBJ9mFXJBX7gMJzqEVZ5s0a5Yk6VbJPkth1Q",
+		"-Dtwitter4j.oauth.accessTokenSecret=XTPcapfIGXDebhOSGcPDIjZNElsfrRHYxwpbrUCQuBcqU"
+	]
+
+run {
+	if ( project.hasProperty('runArgs') ) {
+		args project.runArgs.split(" ")
+	}
+
+	if ( project.hasProperty('mainClass') ) {
+		mainClassName =  project.mainClass
+	} else {
+		mainClassName = "com.github.santosfv.itau.spark.ItauApplication"
+	}
+}
