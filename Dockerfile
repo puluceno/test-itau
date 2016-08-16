@@ -37,4 +37,20 @@ RUN mkdir -p ${SPARK_HOME} \
 	&& tar -xf /tmp/spark.tgz -C ${SPARK_HOME} --strip-components=1 \
 	&& rm -f /tmp/spark.tgz
 
+# NodeJS install
+ENV NODE_JS_HOME=/opt/nodejs
+ENV NODE_JS_VERSION=v4.4.7
+ENV PATH=${PATH}:${NODE_JS_HOME}/bin
+
+RUN mkdir -p $NODE_JS_HOME \
+	&& wget -O /tmp/nodejs.tar.xz http://nodejs.org/dist/${NODE_JS_VERSION}/node-${NODE_JS_VERSION}-linux-x64.tar.xz \
+	&& tar -xf /tmp/nodejs.tar.xz -C ${NODE_JS_HOME} --strip-components=1 \
+	&& rm -f /tmp/nodejs.tar.xz
+
 ADD resources/ /
+ADD . /sources
+
+# Setup NodeJS server
+RUN cd /sources/src/nodejs/server && npm install
+
+ENTRYPOINT ["/sbin/start.sh"]

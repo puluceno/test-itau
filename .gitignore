@@ -9,3 +9,7 @@ out
 bin
 build
 .gradle
+
+# NodeJS
+src/nodejs/server/node_modules
+npm-debug.log
