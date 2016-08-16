@@ -2,6 +2,7 @@ package com.github.santosfv.itau.twitter;
 
 import com.github.santosfv.itau.cassandra.CassandraConnection;
 import com.github.santosfv.itau.cassandra.CassandraConnectionFactory;
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +22,8 @@ public class TwitterTagSearcher {
 
 	private static final String HASH = "#";
 	private static final Logger LOGGER = LoggerFactory.getLogger(TwitterTagSearcher.class);
-	private static final int COUNT = 100;
+	@VisibleForTesting
+	static final int COUNT = 100;
 
 	public static void main(String[] args) {
 
@@ -56,7 +58,8 @@ public class TwitterTagSearcher {
 		}
 	}
 
-	private boolean isValidTag(String tag) {
+	@VisibleForTesting
+	boolean isValidTag(String tag) {
 		boolean isValid = StringUtils.isNotBlank(tag) && tag.startsWith(HASH);
 
 		if (!isValid) {
@@ -66,7 +69,8 @@ public class TwitterTagSearcher {
 		return isValid;
 	}
 
-	private Query createQueryForTag(String tag) {
+	@VisibleForTesting
+	Query createQueryForTag(String tag) {
 		Query query = new Query();
 		query.setQuery(tag);
 		query.setResultType(ResultType.recent);
@@ -75,7 +79,8 @@ public class TwitterTagSearcher {
 		return query;
 	}
 
-	private Stream<SimpleTweet> convertStatusToSimpleTweet(QueryResult result) {
+	@VisibleForTesting
+	Stream<SimpleTweet> convertStatusToSimpleTweet(QueryResult result) {
 		return result
 				.getTweets()
 				.stream()
