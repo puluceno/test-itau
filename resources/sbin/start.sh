@@ -25,4 +25,4 @@ cd /sources && ./gradlew run
 
 info "Iniciando o server NodeJs"
 cd /sources/src/nodejs/server
-exec npm start
+exec node ./bin/www 
